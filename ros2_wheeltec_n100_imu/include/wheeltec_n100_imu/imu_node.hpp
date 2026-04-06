@@ -1,46 +1,38 @@
-#include <cstdio>
-#include <unistd.h>
+#ifndef WHEELTEC_N100_IMU__IMU_NODE_HPP_
+#define WHEELTEC_N100_IMU__IMU_NODE_HPP_
 
 #include <chrono>
-#include <functional>
-#include <memory>
+#include <cstdint>
 #include <string>
+#include <vector>
 
+#include <Eigen/Eigen>
+#include <geometry_msgs/msg/pose2_d.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <sensor_msgs/msg/magnetic_field.hpp>
-#include <std_msgs/msg/string.hpp>
-#include <geometry_msgs/msg/pose2_d.hpp>
+#include <tf2/LinearMath/Quaternion.h>
 
 #include "serial/serial.h"
-#include "tf2/transform_datatypes.h"
- #include <tf2/LinearMath/Quaternion.h>
-#include <Eigen/Eigen>
-
-
 #include "wheeltec_n100_imu/fdilink_data_struct.h"
-
-
-// #include <rcl_interfaces>
 
 using namespace std::chrono_literals;
 
+constexpr uint8_t FRAME_HEAD = 0xfc;
+constexpr uint8_t FRAME_END = 0xfd;
+constexpr uint8_t TYPE_IMU = 0x40;
+constexpr uint8_t TYPE_AHRS = 0x41;
+constexpr uint8_t TYPE_INSGPS = 0x42;
+constexpr uint8_t TYPE_GROUND = 0xf0;
+constexpr uint8_t IMU_LEN = 0x38;
+constexpr uint8_t AHRS_LEN = 0x30;
+constexpr uint8_t INSGPS_LEN = 0x54;
 
-#define FRAME_HEAD 0xfc
-#define FRAME_END 0xfd
-#define TYPE_IMU 0x40
-#define TYPE_AHRS 0x41
-#define TYPE_INSGPS 0x42
-#define TYPE_GROUND 0xf0
-#define IMU_LEN  0x38   //56
-#define AHRS_LEN 0x30   //48
-#define INSGPS_LEN 0x54 //84
-#define PI 3.141592653589793
-#define DEG_TO_RAD 0.017453292519943295
-// Sample covariance
-#define IMU_MAG_COV {0.01, 0.01, 0.01}
-#define IMU_GYRO_COV {0.01, 0.01, 0.01}
-#define IMU_ACCEL_COV {0.05, 0.05, 0.05}
+constexpr double PI = 3.141592653589793;
+constexpr double MAG_SCALE_MILLI_GAUSS_TO_TESLA = 1.0e-7;
 
+const std::vector<double> IMU_MAG_COV = {0.01, 0.01, 0.01};
+const std::vector<double> IMU_GYRO_COV = {0.01, 0.01, 0.01};
+const std::vector<double> IMU_ACCEL_COV = {0.05, 0.05, 0.05};
 
-
+#endif  // WHEELTEC_N100_IMU__IMU_NODE_HPP_
