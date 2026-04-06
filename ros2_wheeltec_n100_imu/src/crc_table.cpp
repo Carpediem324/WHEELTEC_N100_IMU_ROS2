@@ -1,5 +1,4 @@
-#include <stdint.h>
-// #include "wheeltecN100_imu/crc_table.h"
+#include "wheeltec_n100_imu/crc_table.hpp"
 
 static const uint8_t CRC8Table[] = {
     0, 94, 188, 226, 97, 63, 221, 131, 194, 156, 126, 32, 163, 253, 31, 65,
@@ -123,10 +122,10 @@ static const uint32_t CRC32Table[] = {
 };
 
 
-uint8_t CRC8_Table(uint8_t* p, uint8_t counter)
+uint8_t CRC8_Table(const uint8_t * p, std::size_t counter)
 {
     uint8_t crc8 = 0;
-    for (int i = 0; i < counter; i++)
+    for (std::size_t i = 0; i < counter; i++)
     {
         uint8_t value = p[i];
         uint8_t new_index = crc8 ^ value;
@@ -136,10 +135,10 @@ uint8_t CRC8_Table(uint8_t* p, uint8_t counter)
 }
 
 
-uint16_t CRC16_Table(uint8_t *p, uint8_t counter)
+uint16_t CRC16_Table(const uint8_t * p, std::size_t counter)
 {
     uint16_t crc16 = 0;
-    for (int i = 0; i < counter; i++)
+    for (std::size_t i = 0; i < counter; i++)
     {
         uint8_t value = p[i];
         crc16 = CRC16Table[((crc16 >> 8) ^ value) & 0xff] ^ (crc16 << 8);
@@ -147,13 +146,13 @@ uint16_t CRC16_Table(uint8_t *p, uint8_t counter)
     return (crc16);
 }
 
-uint32_t CRC32_Table(uint8_t *p, uint8_t counter)
+uint32_t CRC32_Table(const uint8_t * p, std::size_t counter)
 {
-    uint16_t crc32 = 0;
-    for (int i = 0; i < counter; i++)
+    uint32_t crc32 = 0xFFFFFFFFu;
+    for (std::size_t i = 0; i < counter; i++)
     {
         uint8_t value = p[i];
-        crc32 = CRC16Table[((crc32 >> 8) ^ value) & 0xff] ^ (crc32 << 8);
+        crc32 = CRC32Table[(crc32 ^ value) & 0xFFu] ^ (crc32 >> 8);
     }
-    return (crc32);
+    return (~crc32);
 }
